@@ -15,6 +15,24 @@ ASR:
     kotoba-tech/kotoba-whisper-v2.0:
       model_path: "kotoba-tech/kotoba-whisper-v2.0"
       device: "cuda"
+    Qwen/Qwen3-ASR-1.7B-transformers:
+      model_path: "Qwen/Qwen3-ASR-1.7B"
+      device_map: "cuda:0"
+      dtype: "bfloat16"
+      max_inference_batch_size: 8
+      max_new_tokens: 256
+      attn_implementation: null
+      forced_aligner: null
+      forced_aligner_device_map: "cuda:0"
+      forced_aligner_dtype: "bfloat16"
+    Qwen/Qwen3-ASR-1.7B-vllm:
+      model_path: "Qwen/Qwen3-ASR-1.7B"
+      gpu_memory_utilization: 0.7
+      max_inference_batch_size: 128
+      max_new_tokens: 4096
+      forced_aligner: null
+      forced_aligner_device_map: "cuda:0"
+      forced_aligner_dtype: "bfloat16"
 
 LLM:
   id: "THUDM/chatglm3-6b" # The model you want to use

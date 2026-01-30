@@ -4,21 +4,30 @@ import yaml
 
 from common.abs_app import AbstractApplication
 
-parser = argparse.ArgumentParser()
-parser.add_argument('service', type=str)
-parser.add_argument('--model', type=str)
-parser.add_argument('--db', type=str)
-parser.add_argument('--config', type=str)
-args = parser.parse_args()
+args = None
+_config = None
 
 
-def load_config():
-    path = args.config if args.config else './config.yaml'
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('service', type=str)
+    parser.add_argument('--model', type=str)
+    parser.add_argument('--db', type=str)
+    parser.add_argument('--config', type=str)
+    return parser
+
+
+def load_config(config_path: str | None):
+    path = config_path if config_path else './config.yaml'
     with open(path, mode='r', encoding='utf-8') as f:
         return yaml.safe_load(f)
 
 
-_config = load_config()
+def init_from_cli():
+    global args, _config
+    parser = build_parser()
+    args = parser.parse_args()
+    _config = load_config(args.config)
 
 
 def asr_app() -> AbstractApplication:
@@ -37,6 +46,14 @@ def asr_app() -> AbstractApplication:
         elif asr_id == "kotoba-tech/kotoba-whisper-v2.0":
             from asr.kotoba_whisper_2.model import KotobaWhisper2 as Model
             from asr.kotoba_whisper_2.config import KotobaWhisper2Config as Config
+            return Model(Config(**model_cfg))
+        elif asr_id == "Qwen/Qwen3-ASR-1.7B-transformers":
+            from asr.qwen3_asr_transformers.model import Qwen3ASRTransformers as Model
+            from asr.qwen3_asr_transformers.config import Qwen3ASRTransformersConfig as Config
+            return Model(Config(**model_cfg))
+        elif asr_id == "Qwen/Qwen3-ASR-1.7B-vllm":
+            from asr.qwen3_asr_vllm.model import Qwen3ASRVLLM as Model
+            from asr.qwen3_asr_vllm.config import Qwen3ASRVLLMConfig as Config
             return Model(Config(**model_cfg))
         else:
             raise NameError(f"No such model name (id) {asr_id}")
@@ -215,10 +232,18 @@ def get_app(service):
 
 
 def run(service=None):
+    if _config is None or args is None:
+        raise RuntimeError("Config not loaded. Please run with CLI or call init_from_cli().")
     service = args.service if service is None else service
     print(service)
     app = get_app(service)
     app.run()
 
 
-run()
+def main():
+    init_from_cli()
+    run()
+
+
+if __name__ == "__main__":
+    main()

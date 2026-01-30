@@ -1,0 +1,20 @@
+﻿[project]
+name = "qwen3-asr-vllm"
+version = "0.1.0"
+description = "Qwen3-ASR vLLM backend"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.2",
+    "loguru>=0.7.3",
+    "numpy>=1.26.4",
+    "qwen-asr[vllm]",
+    "torch",
+    "torchaudio",
+    "zerolan-data",
+]
+
+[tool.uv.sources]
+zerolan-data = { git = "https://github.com/AkagawaTsurunaki/zerolan-data.git", rev = "1.5.0" }
+
+[tool.setuptools]
+packages = []

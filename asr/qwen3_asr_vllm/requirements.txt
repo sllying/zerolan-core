@@ -1,0 +1,6 @@
+﻿qwen-asr[vllm]
+flask
+loguru
+numpy
+torch
+torchaudio
